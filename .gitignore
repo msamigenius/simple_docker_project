@@ -1,0 +1,27 @@
+# Python files
+*.pyc
+__pycache__/
+
+# Virtual environments
+venv/
+env/
+
+# Django
+db.sqlite3
+*.log
+*.pot
+*.py[cod]
+__pycache__/
+local_settings.py
+
+# Media
+/media
+
+# Ignore system files
+.DS_Store
+
+# Docker
+*.env
+*.db
+*.pid
+volumes/

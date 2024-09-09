@@ -1,0 +1,42 @@
+services:
+  web:
+    build: 
+      context: .
+    container_name: django
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+      - otp
+    environment:
+      - DJANGO_SETTINGS_MODULE=management_celery.settings
+
+  redis:
+    image: "redis:alpine"
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  celery-beat:
+    build: .
+    command: celery -A management_celery beat --loglevel=info
+    depends_on:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+  otp:
+    build:
+      context: .
+      dockerfile: otp/Dockerfile
+    container_name: otp
+    command: celery -A management_celery worker --loglevel=info
+    depends_on:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
